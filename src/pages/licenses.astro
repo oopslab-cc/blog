@@ -1,0 +1,116 @@
+---
+import PageLayout from "../layouts/PageLayout.astro";
+
+const linkClass =
+  "decoration-border-strong underline transition-colors hover:decoration-current";
+const groups = [
+  {
+    id: "software",
+    title: "Software",
+    items: [
+      { name: "Astro", href: "https://astro.build/", detail: "MIT" },
+      { name: "Tailwind CSS", href: "https://tailwindcss.com/", detail: "MIT" },
+      {
+        name: "Tailwind Typography",
+        href: "https://github.com/tailwindlabs/tailwindcss-typography",
+        detail: "MIT",
+      },
+    ],
+  },
+  {
+    id: "assets",
+    title: "Fonts & colors",
+    items: [
+      { name: "Flexoki", href: "https://stephango.com/flexoki", detail: "MIT" },
+      {
+        name: "Atom One Light",
+        href: "https://github.com/atom/atom/tree/master/packages/one-light-syntax",
+        detail: "MIT",
+      },
+      {
+        name: "Atom One Dark",
+        href: "https://github.com/atom/atom/tree/master/packages/one-dark-syntax",
+        detail: "MIT",
+      },
+      { name: "Geist", href: "https://vercel.com/font", detail: "OFL 1.1" },
+      {
+        name: "SUIT Variable",
+        href: "https://sun.fo/suit/",
+        detail: "OFL 1.1",
+      },
+    ],
+  },
+  {
+    id: "references",
+    title: "Design references",
+    items: [
+      {
+        name: "Vercel Geist",
+        href: "https://vercel.com/geist/typography",
+        detail: "Typography",
+      },
+      {
+        name: "GitHub Primer",
+        href: "https://primer.style/",
+        detail: "Markdown · Accessibility",
+      },
+      {
+        name: "Radix Themes",
+        href: "https://www.radix-ui.com/themes/docs/theme/spacing",
+        detail: "Spacing",
+      },
+    ],
+  },
+] as const;
+---
+
+<PageLayout
+  title="Licenses"
+  description="oopslab에 사용된 오픈 소스 라이선스입니다."
+>
+  <div class="flex items-baseline justify-between gap-4 border-y py-3">
+    <a
+      href="/third-party-notices.txt"
+      target="_blank"
+      rel="noopener noreferrer"
+      class={linkClass}
+    >
+      전체 고지문 <span aria-hidden="true">↗</span><span class="sr-only"
+        >(새 창)</span
+      >
+    </a>
+    <span class="text-muted-foreground font-mono text-sm" aria-hidden="true">
+      TXT
+    </span>
+  </div>
+
+  <div class="mt-10 space-y-10">
+    {
+      groups.map(({ id, title, items }) => (
+        <section aria-labelledby={`${id}-heading`}>
+          <h2 id={`${id}-heading`} class="text-base font-semibold">
+            {title}
+          </h2>
+          <dl class="mt-3 divide-y border-y">
+            {items.map(({ name, href, detail }) => (
+              <div class="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1 py-3">
+                <dt>
+                  <a
+                    href={href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class={linkClass}
+                  >
+                    {name} <span aria-hidden="true">↗</span>
+                    <span class="sr-only">(새 창)</span>
+                  </a>
+                </dt>
+                <dd class="text-muted-foreground text-sm">{detail}</dd>
+              </div>
+            ))}
+          </dl>
+        </section>
+      ))
+    }
+  </div>
+</PageLayout>

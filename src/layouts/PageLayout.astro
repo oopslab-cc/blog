@@ -1,0 +1,35 @@
+---
+import BaseLayout from "./BaseLayout.astro";
+
+interface Props {
+  title: string;
+  heading?: string;
+  description?: string;
+  metaDescription?: string;
+  noindex?: boolean;
+  jsonLd?: Record<string, unknown>;
+}
+
+const {
+  title,
+  heading = title,
+  description,
+  metaDescription = description,
+  noindex,
+  jsonLd,
+} = Astro.props;
+---
+
+<BaseLayout {title} description={metaDescription} {noindex} {jsonLd}>
+  <header class="mb-12">
+    <h1 class="text-3xl font-semibold tracking-tight">{heading}</h1>
+    {
+      description && (
+        <p class="text-muted-foreground mt-3 max-w-xl leading-relaxed">
+          {description}
+        </p>
+      )
+    }
+  </header>
+  <slot />
+</BaseLayout>

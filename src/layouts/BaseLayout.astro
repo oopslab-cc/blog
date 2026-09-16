@@ -1,0 +1,159 @@
+---
+import "../styles/global.css";
+
+import SiteHeader from "../components/SiteHeader.astro";
+import geistSansUrl from "../assets/fonts/geist-variable.woff2?url";
+import suitUrl from "../assets/fonts/suit-variable.woff2?url";
+import { siteConfig } from "../config";
+
+interface Props {
+  title?: string;
+  description?: string;
+  lang?: "ko" | "en";
+  noindex?: boolean;
+  type?: "website" | "article";
+  publishedAt?: Date;
+  updatedAt?: Date;
+  jsonLd?: Record<string, unknown>;
+}
+
+const {
+  title = siteConfig.title,
+  description = siteConfig.description,
+  lang = siteConfig.lang,
+  noindex = false,
+  type = "website",
+  publishedAt,
+  updatedAt,
+  jsonLd,
+} = Astro.props;
+const canonical = new URL(Astro.url.pathname, Astro.site ?? Astro.url.origin);
+const locale = lang === "en" ? "en_US" : siteConfig.locale;
+const imageUrl = new URL(siteConfig.ogImage, Astro.site ?? Astro.url.origin);
+const pageTitle =
+  title === siteConfig.title ? title : `${title} — ${siteConfig.title}`;
+const skipLabel = lang === "en" ? "Skip to content" : "본문으로 이동";
+const serializeJsonLd = (value: Record<string, unknown>) =>
+  JSON.stringify(value).replaceAll("<", "\\u003c");
+const devThemeScript = import.meta.env.DEV
+  ? `const theme = new URLSearchParams(location.search).get("theme");
+if (theme === "light" || theme === "dark") {
+  document.documentElement.dataset.theme = theme;
+} else if (theme === "system") {
+  delete document.documentElement.dataset.theme;
+}`
+  : undefined;
+---
+
+<!doctype html>
+<html lang={lang}>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="generator" content={Astro.generator} />
+    <meta name="author" content={siteConfig.author} />
+    <meta name="description" content={description} />
+    <meta
+      name="robots"
+      content={noindex ? "noindex" : "max-image-preview:large"}
+    />
+    <link rel="canonical" href={canonical} />
+    <link rel="icon" href="/favicon.ico" sizes="16x16 32x32 48x48" />
+    <link rel="icon" type="image/png" href="/favicon-16x16.png" sizes="16x16" />
+    <link rel="icon" type="image/png" href="/favicon-32x32.png" sizes="32x32" />
+    <link rel="icon" type="image/png" href="/favicon-48x48.png" sizes="48x48" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" sizes="any" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" sizes="180x180" />
+    <link
+      rel="preload"
+      href={geistSansUrl}
+      as="font"
+      type="font/woff2"
+      crossorigin="anonymous"
+    />
+    {
+      lang === "ko" && (
+        <link
+          rel="preload"
+          href={suitUrl}
+          as="font"
+          type="font/woff2"
+          crossorigin="anonymous"
+        />
+      )
+    }
+    <meta property="og:type" content={type} />
+    <meta property="og:site_name" content={siteConfig.title} />
+    <meta property="og:locale" content={locale} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:title" content={pageTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:image" content={imageUrl} />
+    <meta property="og:image:type" content="image/png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content={`${siteConfig.title} blog`} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={pageTitle} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={imageUrl} />
+    <meta name="twitter:image:alt" content={`${siteConfig.title} blog`} />
+
+    {
+      type === "article" && publishedAt && (
+        <meta
+          property="article:published_time"
+          content={publishedAt.toISOString()}
+        />
+      )
+    }
+    {
+      type === "article" && (
+        <meta property="article:author" content={siteConfig.authorUrl} />
+      )
+    }
+    {
+      type === "article" && updatedAt && (
+        <meta
+          property="article:modified_time"
+          content={updatedAt.toISOString()}
+        />
+      )
+    }
+    {
+      jsonLd && (
+        <script
+          type="application/ld+json"
+          set:html={serializeJsonLd(jsonLd)}
+          is:inline
+        />
+      )
+    }
+
+    {devThemeScript && <script is:inline set:html={devThemeScript} />}
+    <title>{pageTitle}</title>
+  </head>
+  <body id="top" class="px-6 antialiased sm:px-8">
+    <a href="#main-content" class="skip-link sr-only">{skipLabel}</a>
+
+    <div class="mx-auto flex min-h-svh w-full max-w-prose flex-col">
+      <SiteHeader />
+
+      <main id="main-content" class="grow pt-12 pb-16">
+        <slot />
+      </main>
+
+      <footer
+        class="text-muted-foreground flex min-h-20 items-center justify-between border-t text-sm"
+      >
+        <small class="text-sm">© {new Date().getFullYear()} oopslab</small>
+        <a
+          href="/licenses/"
+          class="decoration-border-strong underline transition-colors hover:decoration-current"
+        >
+          Licenses
+        </a>
+      </footer>
+    </div>
+  </body>
+</html>

@@ -1,0 +1,355 @@
+@import "tailwindcss";
+@import "./flexoki.css";
+@import "./oops.css";
+
+@plugin "@tailwindcss/typography";
+
+/* Token sources ---------------------------------------------------------------------
+ * Color primitives: Oops (`oops.css`) + Flexoki (`flexoki.css`)
+ * Spacing, typography, radius, shadow, breakpoint, motion: Tailwind default theme
+ * Only shared brand/theme decisions are mapped to semantic tokens below.
+ */
+
+/* Typography assets ---------------------------------------------------------------- */
+@font-face {
+  font-family: "Geist";
+  src: url("../assets/fonts/geist-variable.woff2") format("woff2");
+  font-display: optional;
+  font-style: normal;
+  font-weight: 100 900;
+}
+
+@font-face {
+  font-family: "SUIT Variable";
+  src: url("../assets/fonts/suit-variable.woff2") format("woff2");
+  font-display: optional;
+  font-style: normal;
+  font-weight: 100 900;
+  unicode-range:
+    U+1100-11ff, U+3130-318f, U+a960-a97f, U+ac00-d7a3, U+d7b0-d7ff;
+}
+
+@font-face {
+  font-family: "Geist Mono";
+  src: url("../assets/fonts/geist-mono-variable.woff2") format("woff2");
+  font-display: optional;
+  font-style: normal;
+  font-weight: 100 900;
+}
+
+/* Semantic color tokens ------------------------------------------------------------- */
+:root {
+  color-scheme: light dark;
+  --background: light-dark(var(--flexoki-paper), var(--flexoki-black));
+  --surface: light-dark(var(--flexoki-50), var(--flexoki-950));
+  --foreground: light-dark(var(--flexoki-900), var(--flexoki-150));
+  --muted-foreground: light-dark(var(--flexoki-600), var(--flexoki-500));
+  --border: light-dark(var(--flexoki-200), var(--flexoki-850));
+  --border-strong: light-dark(var(--flexoki-300), var(--flexoki-800));
+  --primary: var(--oops-orange);
+  --primary-subtle: light-dark(
+    var(--oops-soft-orange),
+    color-mix(in oklab, var(--oops-orange) 15%, var(--flexoki-black))
+  );
+  --selection: light-dark(
+    var(--oops-soft-orange),
+    color-mix(in oklab, var(--oops-orange) 25%, var(--flexoki-black))
+  );
+}
+
+/* System theme; local dev may override with ?theme=light|dark|system. ---------------- */
+:root[data-theme="light"] {
+  color-scheme: light;
+}
+
+:root[data-theme="dark"] {
+  color-scheme: dark;
+}
+
+:root[data-theme="dark"] .astro-code,
+:root[data-theme="dark"] .astro-code span {
+  color: var(--shiki-dark) !important;
+  font-style: var(--shiki-dark-font-style) !important;
+  font-weight: var(--shiki-dark-font-weight) !important;
+  text-decoration: var(--shiki-dark-text-decoration) !important;
+}
+
+:root[data-theme="dark"] .astro-code {
+  background-color: var(--shiki-dark-bg) !important;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .astro-code,
+  :root:not([data-theme="light"]) .astro-code span {
+    color: var(--shiki-dark) !important;
+    font-style: var(--shiki-dark-font-style) !important;
+    font-weight: var(--shiki-dark-font-weight) !important;
+    text-decoration: var(--shiki-dark-text-decoration) !important;
+  }
+
+  :root:not([data-theme="light"]) .astro-code {
+    background-color: var(--shiki-dark-bg) !important;
+  }
+}
+
+/* Tailwind semantic token bridge ---------------------------------------------------- */
+@theme inline {
+  --color-background: var(--background);
+  --color-surface: var(--surface);
+  --color-foreground: var(--foreground);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-border: var(--border);
+  --color-border-strong: var(--border-strong);
+  --color-primary: var(--primary);
+  --color-primary-subtle: var(--primary-subtle);
+  --font-sans: "Geist", "SUIT Variable", system-ui, sans-serif;
+  --font-mono: "Geist Mono", ui-monospace, monospace;
+}
+
+@layer base {
+  * {
+    border-color: var(--border);
+  }
+
+  html {
+    background: var(--background);
+    font-family: var(--font-sans);
+    scrollbar-gutter: stable;
+  }
+
+  body {
+    min-height: 100svh;
+    background: var(--background);
+    color: var(--foreground);
+  }
+
+  ::selection {
+    background: var(--selection);
+  }
+
+  :focus-visible {
+    @apply outline-2 outline-offset-2;
+    outline-color: var(--primary);
+  }
+
+  a {
+    @apply underline-offset-2;
+  }
+
+  a:hover {
+    color: var(--primary);
+  }
+
+  a:focus {
+    background: var(--primary-subtle);
+  }
+
+  a:focus-visible {
+    color: var(--foreground);
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    @apply scroll-mt-8 text-balance;
+  }
+}
+
+.skip-link:focus {
+  @apply bg-background fixed top-2 left-2 z-50 m-0 h-auto w-auto overflow-visible rounded-sm px-3 py-2 text-sm whitespace-normal;
+  clip-path: none;
+}
+
+.prose {
+  --tw-prose-body: var(--foreground);
+  --tw-prose-headings: var(--foreground);
+  --tw-prose-lead: var(--muted-foreground);
+  --tw-prose-links: var(--foreground);
+  --tw-prose-bold: var(--foreground);
+  --tw-prose-counters: var(--muted-foreground);
+  --tw-prose-bullets: var(--muted-foreground);
+  --tw-prose-hr: var(--border);
+  --tw-prose-quotes: var(--muted-foreground);
+  --tw-prose-quote-borders: var(--border-strong);
+  --tw-prose-captions: var(--muted-foreground);
+  --tw-prose-code: var(--foreground);
+  --tw-prose-kbd: var(--foreground);
+  --tw-prose-kbd-shadows: transparent;
+  --tw-prose-pre-code: var(--foreground);
+  --tw-prose-pre-bg: var(--surface);
+  --tw-prose-th-borders: var(--border-strong);
+  --tw-prose-td-borders: var(--border);
+}
+
+/* Editorial rhythm: 0.25rem grid, proximity grouping, Tailwind prose scale. */
+.prose :where(p, ul, ol, dl):not(:where([class~="not-prose"] *)) {
+  @apply mt-0 mb-4;
+}
+
+.prose
+  :where(blockquote, table, pre, details, figure):not(
+    :where([class~="not-prose"] *)
+  ) {
+  @apply my-6;
+}
+
+.prose :where(h2):not(:where([class~="not-prose"] *)) {
+  @apply mt-12 mb-4;
+}
+
+.prose :where(h3):not(:where([class~="not-prose"] *)) {
+  @apply mt-8 mb-3;
+}
+
+.prose :where(h4, h5, h6):not(:where([class~="not-prose"] *)) {
+  @apply mt-6 mb-2;
+}
+
+.prose
+  :where(h2, h3, h4, h5, h6):not(:where([class~="not-prose"] *))
+  + :where(blockquote, table, pre, details, figure):not(
+    :where([class~="not-prose"] *)
+  ) {
+  @apply mt-0;
+}
+
+.prose :where(h5):not(:where([class~="not-prose"] *)) {
+  @apply text-sm font-semibold tracking-tight;
+}
+
+.prose :where(h6):not(:where([class~="not-prose"] *)) {
+  @apply text-muted-foreground text-sm font-semibold tracking-tight;
+}
+
+.prose :where(li):not(:where([class~="not-prose"] *)) {
+  @apply my-0;
+}
+
+.prose :where(li + li):not(:where([class~="not-prose"] *)) {
+  @apply mt-1;
+}
+
+.prose :where(li > p):not(:where([class~="not-prose"] *)) {
+  @apply mb-2;
+}
+
+.prose :where(li > :first-child):not(:where([class~="not-prose"] *)) {
+  @apply mt-0;
+}
+
+.prose :where(li > :last-child):not(:where([class~="not-prose"] *)) {
+  @apply mb-0;
+}
+
+.prose :where(li > ul, li > ol):not(:where([class~="not-prose"] *)) {
+  @apply mt-1 mb-0;
+}
+
+.prose :where(.task-list-item):not(:where([class~="not-prose"] *)) {
+  @apply list-none;
+}
+
+.prose
+  :where(.task-list-item > input[type="checkbox"]):not(
+    :where([class~="not-prose"] *)
+  ) {
+  @apply bg-background size-4 appearance-none rounded-sm border align-middle opacity-100;
+  margin-inline-start: calc(var(--spacing) * -6.5);
+  margin-inline-end: calc(var(--spacing) * 2.5);
+}
+
+.prose
+  :where(.task-list-item > input[type="checkbox"]:checked):not(
+    :where([class~="not-prose"] *)
+  ) {
+  border-color: var(--primary);
+  background-color: var(--primary);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='m3 8 3 3 7-7' fill='none' stroke='%23FFFCF0' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+}
+
+.prose :where(hr):not(:where([class~="not-prose"] *)) {
+  @apply my-12;
+}
+
+.prose > :first-child {
+  @apply mt-0;
+}
+
+.prose > :last-child {
+  @apply mb-0;
+}
+
+.prose :where(blockquote):not(:where([class~="not-prose"] *)) {
+  @apply border-border-strong border-l-2 font-normal not-italic;
+}
+
+.prose :where(blockquote > :first-child):not(:where([class~="not-prose"] *)) {
+  @apply mt-0;
+}
+
+.prose :where(blockquote > :last-child):not(:where([class~="not-prose"] *)) {
+  @apply mb-0;
+}
+
+.prose
+  :where(blockquote p:first-of-type):not(
+    :where([class~="not-prose"] *)
+  )::before,
+.prose
+  :where(blockquote p:last-of-type):not(:where([class~="not-prose"] *))::after {
+  content: none;
+}
+
+.prose :where(caption):not(:where([class~="not-prose"] *)) {
+  @apply text-muted-foreground mb-2 text-left text-sm;
+}
+
+.prose :where(mark):not(:where([class~="not-prose"] *)) {
+  @apply px-1;
+  background: var(--selection);
+  color: var(--foreground);
+}
+
+.prose :where(summary):not(:where([class~="not-prose"] *)) {
+  @apply cursor-pointer;
+}
+
+.prose :where(details[open] > summary):not(:where([class~="not-prose"] *)) {
+  @apply mb-2;
+}
+
+.prose :where(details > :last-child):not(:where([class~="not-prose"] *)) {
+  @apply mb-0;
+}
+
+.prose :where(a):not(:where([class~="not-prose"] *)) {
+  text-decoration-color: var(--border-strong);
+}
+
+.prose :where(a:hover):not(:where([class~="not-prose"] *)) {
+  color: var(--primary);
+  text-decoration-color: currentColor;
+}
+
+.prose :where(a:focus-visible):not(:where([class~="not-prose"] *)) {
+  color: var(--foreground);
+  text-decoration-color: currentColor;
+}
+
+.prose :where(kbd):not(:where([class~="not-prose"] *)) {
+  @apply bg-surface rounded-sm border px-1.5 py-0.5 font-mono text-sm font-normal shadow-none;
+}
+
+.prose :where(code):not(:where(pre *, [class~="not-prose"] *)) {
+  @apply bg-surface rounded-sm px-1.5 py-0.5 font-normal;
+}
+
+.prose :where(code):not(:where(pre *, [class~="not-prose"] *))::before,
+.prose :where(code):not(:where(pre *, [class~="not-prose"] *))::after {
+  content: none;
+}
+
+.astro-code {
+  @apply rounded-md border p-4 font-mono text-sm/relaxed;
+}

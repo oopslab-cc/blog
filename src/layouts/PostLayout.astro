@@ -1,0 +1,154 @@
+---
+import type { CollectionEntry } from "astro:content";
+
+import Prose from "../components/Prose.astro";
+import { siteConfig } from "../config";
+import { formatDate } from "../utils/formatDate";
+import BaseLayout from "./BaseLayout.astro";
+
+interface Props {
+  post: CollectionEntry<"posts">;
+  olderPost?: CollectionEntry<"posts">;
+  newerPost?: CollectionEntry<"posts">;
+}
+
+const { post, olderPost, newerPost } = Astro.props;
+const { title, description, lang, publishedAt, updatedAt } = post.data;
+const origin = Astro.site ?? Astro.url.origin;
+const articleUrl = new URL(`/posts/${post.id}/`, origin).href;
+const siteUrl = new URL("/", origin).href;
+const imageUrl = new URL(siteConfig.ogImage, origin).href;
+const logoUrl = new URL(siteConfig.logo, origin).href;
+const organizationId = `${siteConfig.authorUrl}/#organization`;
+const organization = {
+  "@type": "Organization",
+  "@id": organizationId,
+  name: siteConfig.author,
+  url: siteConfig.authorUrl,
+  logo: {
+    "@type": "ImageObject",
+    url: logoUrl,
+    width: 800,
+    height: 800,
+  },
+};
+const isEnglish = lang === "en";
+const updatedLabel = isEnglish ? "Updated" : "수정";
+const navigationLabel = isEnglish ? "Post navigation" : "글 탐색";
+const previousLabel = isEnglish ? "Previous post" : "이전 글";
+const nextLabel = isEnglish ? "Next post" : "다음 글";
+const backToTopLabel = isEnglish ? "Back to top" : "맨 위로";
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "@id": `${articleUrl}#article`,
+  headline: title,
+  description,
+  url: articleUrl,
+  mainEntityOfPage: articleUrl,
+  image: {
+    "@type": "ImageObject",
+    url: imageUrl,
+    width: 1200,
+    height: 630,
+  },
+  datePublished: publishedAt.toISOString(),
+  dateModified: (updatedAt ?? publishedAt).toISOString(),
+  inLanguage: lang,
+  isPartOf: {
+    "@type": "Blog",
+    "@id": `${siteUrl}#blog`,
+    name: siteConfig.title,
+    url: siteUrl,
+  },
+  author: organization,
+  publisher: organization,
+};
+---
+
+<BaseLayout
+  {title}
+  {description}
+  {lang}
+  type="article"
+  {publishedAt}
+  {updatedAt}
+  {jsonLd}
+>
+  <article>
+    <header class="mb-12">
+      <h1 class="text-3xl font-semibold tracking-tight">{title}</h1>
+      <p class="text-muted-foreground mt-3 flex flex-wrap gap-x-2 text-sm">
+        <time datetime={publishedAt.toISOString()}
+          >{formatDate(publishedAt, lang)}</time
+        >
+        {
+          updatedAt && (
+            <time datetime={updatedAt.toISOString()}>
+              {updatedLabel} {formatDate(updatedAt, lang)}
+            </time>
+          )
+        }
+      </p>
+    </header>
+
+    <Prose><slot /></Prose>
+
+    {
+      (olderPost || newerPost) && (
+        <nav
+          aria-label={navigationLabel}
+          class="mt-12 grid gap-6 border-t pt-6 sm:grid-cols-2"
+        >
+          {olderPost && (
+            <a
+              href={`/posts/${olderPost.id}/`}
+              rel="prev"
+              class="group w-fit justify-self-start no-underline focus:bg-transparent"
+            >
+              <span class="text-muted-foreground block text-sm">
+                ← {previousLabel}
+              </span>
+              <span class="mt-1 block font-semibold">
+                <span
+                  lang={olderPost.data.lang}
+                  class="decoration-border-strong group-focus:bg-primary-subtle underline transition-colors group-hover:decoration-current"
+                >
+                  {olderPost.data.title}
+                </span>
+              </span>
+            </a>
+          )}
+          {newerPost && (
+            <a
+              href={`/posts/${newerPost.id}/`}
+              rel="next"
+              class="group w-fit justify-self-start no-underline focus:bg-transparent sm:col-start-2 sm:justify-self-end sm:text-right"
+            >
+              <span class="text-muted-foreground block text-sm">
+                {nextLabel} →
+              </span>
+              <span class="mt-1 block font-semibold">
+                <span
+                  lang={newerPost.data.lang}
+                  class="decoration-border-strong group-focus:bg-primary-subtle underline transition-colors group-hover:decoration-current"
+                >
+                  {newerPost.data.title}
+                </span>
+              </span>
+            </a>
+          )}
+        </nav>
+      )
+    }
+
+    <div class="mt-8 text-right">
+      <a
+        href="#top"
+        class="decoration-border-strong underline transition-colors hover:decoration-current"
+      >
+        ↑ {backToTopLabel}
+      </a>
+    </div>
+  </article>
+</BaseLayout>

@@ -1,0 +1,19 @@
+/*
+ * Flexoki 2.0 — Copyright (c) 2023 Steph Ango
+ * Source: https://github.com/kepano/flexoki/blob/main/css/flexoki.css
+ * License: ../../licenses/FLEXOKI-LICENSE
+ */
+:root {
+  --flexoki-black: #100f0f;
+  --flexoki-paper: #fffcf0;
+  --flexoki-50: #f2f0e5;
+  --flexoki-150: #dad8ce;
+  --flexoki-200: #cecdc3;
+  --flexoki-300: #b7b5ac;
+  --flexoki-500: #878580;
+  --flexoki-600: #6f6e69;
+  --flexoki-800: #403e3c;
+  --flexoki-850: #343331;
+  --flexoki-900: #282726;
+  --flexoki-950: #1c1b1a;
+}

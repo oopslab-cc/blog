@@ -1,0 +1,18 @@
+---
+import { siteConfig } from "../config";
+---
+
+<header class="flex h-16 items-center">
+  <a
+    href="/"
+    aria-current={Astro.url.pathname === "/" ? "page" : undefined}
+    class="group inline-flex h-7 items-center font-semibold tracking-tight no-underline focus:bg-transparent"
+  >
+    <img src="/favicon.svg" alt="" width="28" height="28" />
+    <span
+      class="group-hover:bg-primary-subtle group-focus:bg-primary-subtle flex h-7 items-center px-2 transition-colors"
+    >
+      {siteConfig.title}
+    </span>
+  </a>
+</header>
