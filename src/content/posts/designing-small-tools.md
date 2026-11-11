@@ -3,6 +3,7 @@ title: Designing Small Tools That Last
 description: A short English sample for testing long-form typography, rhythm, and code on oopslab.
 lang: en
 publishedAt: 2026-08-28
+draft: true
 ---
 
 Good software does not need to announce its architecture. It should help someone move from a question to an answer with as little friction as possible. This article is an English typography sample, but it is also a compact set of principles for building tools that remain useful.

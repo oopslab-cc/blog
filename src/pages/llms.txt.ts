@@ -12,6 +12,11 @@ export const GET: APIRoute = async ({ site }) => {
   const origin = (site ?? new URL(siteConfig.siteUrl)).href.replace(/\/$/, "");
   const posts = await getVisiblePosts();
 
+  const postLines = posts.map((post) => {
+    const url = `${origin}/posts/${post.id}/`;
+    return `- [${post.data.title}](${url}): ${post.data.description} (${post.data.lang}, ${formatDate(post.data.publishedAt, post.data.lang)})`;
+  });
+
   const lines = [
     `# ${siteConfig.title}`,
     "",
@@ -21,13 +26,7 @@ export const GET: APIRoute = async ({ site }) => {
     "",
     "Each post is also plain Markdown at `<post-url>.md`; feed at `/rss.xml`.",
     "",
-    "## Posts",
-    "",
-    ...posts.map((post) => {
-      const url = `${origin}/posts/${post.id}/`;
-      return `- [${post.data.title}](${url}): ${post.data.description} (${post.data.lang}, ${formatDate(post.data.publishedAt, post.data.lang)})`;
-    }),
-    "",
+    ...(postLines.length ? ["## Posts", "", ...postLines, ""] : []),
     "## Other",
     "",
     `- [RSS feed](${origin}/rss.xml)`,
