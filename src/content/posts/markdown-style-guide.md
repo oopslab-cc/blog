@@ -2,6 +2,7 @@
 title: Markdown 스타일 가이드
 description: oopslab 블로그에서 사용하는 Markdown 요소와 Atom One 코드 하이라이트를 확인합니다.
 publishedAt: 2026-08-29
+draft: true
 ---
 
 이 글은 본문 타이포그래피와 Markdown 요소를 한 번에 검증하기 위한 예시입니다. 글 제목이 1단계 제목이므로 본문은 2단계부터 시작합니다.
