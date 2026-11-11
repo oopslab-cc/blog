@@ -4,6 +4,7 @@ import sitemap from "@astrojs/sitemap";
 import tailwindcss from "@tailwindcss/vite";
 import { defineConfig } from "astro/config";
 
+import { siteConfig } from "./src/config.ts";
 import { atomOneDark, atomOneLight } from "./src/themes/atom-one.mjs";
 
 /**
@@ -73,7 +74,7 @@ const semanticLabels = {
 };
 
 export default defineConfig({
-  site: "https://blog.oopslab.cc",
+  site: siteConfig.siteUrl,
   trailingSlash: "always",
   integrations: [sitemap()],
   markdown: {

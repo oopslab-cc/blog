@@ -1,12 +1,12 @@
 ---
-import { getCollection, render, type CollectionEntry } from "astro:content";
+import { render } from "astro:content";
+import type { CollectionEntry } from "astro:content";
 
 import PostLayout from "../../layouts/PostLayout.astro";
+import { getVisiblePosts } from "../../utils/posts";
 
 export async function getStaticPaths() {
-  const posts = (await getCollection("posts", ({ data }) => !data.draft)).sort(
-    (a, b) => b.data.publishedAt.valueOf() - a.data.publishedAt.valueOf(),
-  );
+  const posts = await getVisiblePosts();
 
   return posts.map((post, index) => ({
     params: { id: post.id },

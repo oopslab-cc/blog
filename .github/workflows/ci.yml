@@ -1,0 +1,81 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    name: check + build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: pnpm
+
+      - name: Install
+        run: pnpm install --frozen-lockfile
+
+      - name: Type/diagnostics check
+        run: pnpm check
+
+      - name: Format check
+        run: pnpm format:check
+
+      - name: Build
+        run: pnpm build
+
+      - name: Verify generated SEO/AEO files
+        run: |
+          set -eu
+          for f in dist/robots.txt dist/rss.xml dist/llms.txt dist/sitemap-index.xml; do
+            test -s "$f" || { echo "missing or empty: $f"; exit 1; }
+          done
+          grep -q 'Sitemap:' dist/robots.txt
+          grep -q '<item>' dist/rss.xml
+          echo "generated files OK"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: dist
+          path: dist
+          retention-days: 7
+
+  # Inert until the repo variables CLOUDFLARE_PAGES_PROJECT (+ secrets
+  # CLOUDFLARE_API_TOKEN / CLOUDFLARE_ACCOUNT_ID) are configured.
+  deploy:
+    name: deploy (Cloudflare Pages)
+    needs: build
+    if: github.ref == 'refs/heads/main' && vars.CLOUDFLARE_PAGES_PROJECT != ''
+    runs-on: ubuntu-latest
+    environment:
+      name: production
+      url: https://blog.oopslab.cc
+    permissions:
+      contents: read
+      deployments: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: dist
+          path: dist
+
+      - uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: pages deploy dist --project-name=${{ vars.CLOUDFLARE_PAGES_PROJECT }} --branch=main

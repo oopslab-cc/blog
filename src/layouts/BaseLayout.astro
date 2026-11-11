@@ -27,7 +27,13 @@ const {
   updatedAt,
   jsonLd,
 } = Astro.props;
-const canonical = new URL(Astro.url.pathname, Astro.site ?? Astro.url.origin);
+const origin = Astro.site ?? Astro.url.origin;
+const canonical = new URL(Astro.url.pathname, origin);
+const rssUrl = new URL("rss.xml", origin);
+const markdownUrl =
+  type === "article"
+    ? new URL(`${Astro.url.pathname.replace(/\/$/, "")}.md`, origin)
+    : undefined;
 const locale = lang === "en" ? "en_US" : siteConfig.locale;
 const imageUrl = new URL(siteConfig.ogImage, Astro.site ?? Astro.url.origin);
 const pageTitle =
@@ -58,6 +64,17 @@ if (theme === "light" || theme === "dark") {
       content={noindex ? "noindex" : "max-image-preview:large"}
     />
     <link rel="canonical" href={canonical} />
+    <link
+      rel="alternate"
+      type="application/rss+xml"
+      title={`${siteConfig.title} RSS`}
+      href={rssUrl}
+    />
+    {
+      markdownUrl && (
+        <link rel="alternate" type="text/markdown" href={markdownUrl} />
+      )
+    }
     <link rel="icon" href="/favicon.ico" sizes="16x16 32x32 48x48" />
     <link rel="icon" type="image/png" href="/favicon-16x16.png" sizes="16x16" />
     <link rel="icon" type="image/png" href="/favicon-32x32.png" sizes="32x32" />
